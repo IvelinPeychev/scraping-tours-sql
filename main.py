@@ -20,9 +20,9 @@ def scrape(url):
     return text
 
 
-def extract(source):
+def extract(page_content):
     extractor = selectorlib.Extractor.from_yaml_file("extract.yaml")
-    value = extractor.extract(source)['tours']
+    value = extractor.extract(page_content)['tours']
     return value
 
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
                 store(extracted)
                 send_email(USERNAME, extracted, extracted)
 
-    # Set the time of the script run pause
-    time.sleep(2)
+        # Set the time of the script run pause
+        time.sleep(2)
 
 # another option is Python anywhere from day 28, but it is subscription service
