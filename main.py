@@ -12,6 +12,11 @@ URL = 'https://programmer100.pythonanywhere.com/tours/'
 USERNAME = 'peychev.vn@gmail.com'
 PASSWORD = os.getenv('PASSWORD')
 
+# Example queries
+
+"INSERT INTO events VALUES ('Monkey', 'Monkey City', '2099.10.10')"
+"SELECT * FROM events WHERE date='2099.10.10'"
+"DELETE FROM events WHERE band='Tigers'"
 
 def scrape(url):
     """Scrape the page source from the URL"""
