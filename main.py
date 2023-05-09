@@ -2,6 +2,8 @@ import os
 import smtplib
 import ssl
 from email.message import EmailMessage
+import time
+
 
 import requests
 import selectorlib
@@ -53,7 +55,7 @@ def send_email(from_email, subject, message):
 
 
 def store(extracted):
-    """Stored the extract info in file so we can check if the info is already sent to prevent sending spam mails"""
+    """Stored the extract info in file, so we can check if the info is already sent to prevent sending spam mails"""
     with open('data.txt', 'a') as f:
         f.write(extracted + '\n')
 
@@ -63,12 +65,19 @@ def read(extracted):
         return f.read()
 
 if __name__ == '__main__':
-    scraped = scrape(URL)
-    extracted = extract(scraped)
-    print(extracted)
+    # Run the script after some period of time
+    while True:
+        scraped = scrape(URL)
+        extracted = extract(scraped)
+        print(extracted)
 
-    content = read(extracted)
-    if extracted != 'No upcoming tours':
-        if extracted not in content:
-            store(extracted)
-            send_email(USERNAME, extracted, extracted)
+        content = read(extracted)
+        if extracted != 'No upcoming tours':
+            if extracted not in content:
+                store(extracted)
+                send_email(USERNAME, extracted, extracted)
+
+    # Set the time of the script run pause
+    time.sleep(2)
+
+# another option is Python anywhere from day 28, but it is subscription service
