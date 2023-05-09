@@ -3,6 +3,7 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 import time
+import sqlite3
 
 
 import requests
@@ -17,6 +18,9 @@ PASSWORD = os.getenv('PASSWORD')
 "INSERT INTO events VALUES ('Monkey', 'Monkey City', '2099.10.10')"
 "SELECT * FROM events WHERE date='2099.10.10'"
 "DELETE FROM events WHERE band='Tigers'"
+
+# As we need to create the DB connection once we not need to set that in the method
+connection = sqlite3.connect('data.db')
 
 def scrape(url):
     """Scrape the page source from the URL"""
@@ -61,13 +65,33 @@ def send_email(from_email, subject, message):
 
 def store(extracted):
     """Stored the extract info in file, so we can check if the info is already sent to prevent sending spam mails"""
-    with open('data.txt', 'a') as f:
-        f.write(extracted + '\n')
+    # with open('data.txt', 'a') as f:
+    #     f.write(extracted + '\n')
+
+    #SQL
+    row = extracted.split(',')
+    row = [item.strip() for item in row]
+    cursor = connection.cursor()
+    cursor.execute('INSERT INTO events VALUES(?,?,?)', row)
+    connection.commit()
+
 
 
 def read(extracted):
-    with open('data.txt', 'r') as f:
-        return f.read()
+    # With text file
+    # with open('data.txt', 'r') as f:
+    #     return f.read()
+
+    # With SQL query
+    row = extracted.split(',')
+    row = [item.strip() for item in row]
+    # Assign each variable to a part of the tuple list
+    band, city, date = row
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM events WHERE band=? AND city=? AND date=?', (band, city, date))
+    rows = cursor.fetchall()
+    print(rows)
+    return rows
 
 if __name__ == '__main__':
     # Run the script after some period of time
@@ -76,9 +100,13 @@ if __name__ == '__main__':
         extracted = extract(scraped)
         print(extracted)
 
-        content = read(extracted)
+        # content = read(extracted)
         if extracted != 'No upcoming tours':
-            if extracted not in content:
+            row = read(extracted)
+            # if extracted not in content:
+
+            # Check if the row values exist, if not EMPTY row
+            if not row:
                 store(extracted)
                 send_email(USERNAME, extracted, extracted)
 
