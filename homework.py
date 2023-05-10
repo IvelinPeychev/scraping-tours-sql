@@ -82,11 +82,8 @@ if __name__ == '__main__':
     info = (temperature, date_and_time)
     store_info(info)
     graph_data = read_db()
-    temp = []
-    date = []
-    for data in graph_data:
-        temp.append(data[0])
-        date.append(data[1])
+    temp = [data[0] for data in graph_data]
+    date = [data[1] for data in graph_data]
 
     # Start the web app
     st.title('')
